@@ -1,0 +1,13 @@
+napiszmy interpreter języka logo /logomocja, jakie trzeba mieć klasy
+klasa Command i po niej dziedziczą: Right, Left, Foreward
+klasa Turtle i ma metody: up()-> pen=False, down()-> pen=True, foreward(), angle(), right(), lef()
+
+powinien być jakiś device na którym on to rysuje, więc niech Turtle ma jeszcze device
+ klasy Graphic
+to co robi żółw, to ma znać swoje aktualne położenie: x, y, alpha, pen (czy pióro jest poniesione
+czy opuszczone
+
+Graphic device może to być ekran, może być svg, któe umie narysować kreskę
+
+czym się różni fabryka klas od dyspozytora !!!
+
