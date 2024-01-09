@@ -82,7 +82,7 @@ class FlatBottomRestrainFunction(AbstractRestrainFunction):
 
 class Maker(ABC):
     @abstractmethod
-    def make_object(self):
+    def make_object(self, tokens):
         pass
 
 
@@ -127,8 +127,9 @@ rst_data = """
  3  2 HARMONIC 3.0 1.0
  5 13 FLAT_BOTTOM 5.0 6.0 -1.0
  6 12 FLAT_BOTTOM 5.0 6.0 -1.0
- 8  6 HIGH 8.0 9.0
-"""
+ """
+#  8  6 HIGH 8.0 9.0
+# """
 if __name__ == "__main__":
 
     # factory = {"LINEAR": MakeLinear(), "HARMONIC": MakeHarmonic(), "LORENTZIAN": MakeLorentzian(), "FLAT_BOTTOM": MakeFlatBottom()}
@@ -148,6 +149,9 @@ if __name__ == "__main__":
         tokens = line.split()
 
         # rst.append(factory[tokens[2]].make_object(tokens))
+        print('tu')
+        print(tokens[2],tokens)
+        print('i tu')
         rst.append(factory.make_restrain(tokens[2],tokens))
 
     atoms = atoms_from_pdb("surpass.pdb") #sys.argv[1]
