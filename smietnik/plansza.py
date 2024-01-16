@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     board = Board(30)
     # with open("easy_board.txt") as board:
-    with open("board1.txt") as board_txt:
+    with open("../Pacman_python/board1.txt") as board_txt:
         # print(board.read())
 
         line_number = 0
