@@ -18,10 +18,12 @@ def sign(n):
 class MovingObject(ABC):
     def __init__(self, x: int, y: int, board: "Board"):
         self._board = board
-        self._position = (x, y)
+        self._position = (x * board.factor, y * board.factor)
+        # self._position = (x * board.factor + board.factor//2, y * board.factor + board.factor//2)
+        self._center = (x * board.factor + board.factor//2, y * board.factor + board.factor//2)
         self._color = None
         self._direction = (0, 0)
-        self._current_tile = (x, y)
+        self._current_tile = (x * board.factor, y * board.factor)
 
     @property
     def direction(self):
@@ -129,6 +131,9 @@ class Pacman(MovingObject):
         pygame.draw.circle(screen, self._color,
                            (self._position[0] + self._board.factor / 2, self._position[1] + self._board.factor / 2),
                            self._board.factor / 2)
+        # pygame.draw.circle(screen, self._color,
+        #                    (self._position[0], self._position[1]), self._board.factor / 2)
+
 
 class Ghost(MovingObject):
 
@@ -151,3 +156,6 @@ class Ghost(MovingObject):
         pygame.draw.circle(screen, self._color,
                            (self._position[0] + self._board.factor / 2, self._position[1] + self._board.factor / 2),
                            self._board.factor / 2)
+        # pygame.draw.circle(screen, self._color,
+        #                    (self._position[0], self._position[1]), self._board.factor / 2)
+

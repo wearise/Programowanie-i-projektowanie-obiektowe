@@ -9,21 +9,22 @@ from Direction import Direction
 from Strategy import RandomStrategy, FollowStrategy
 from MovingObject import Pacman, Ghost
 from Wall import Wall
+from Treats import Treat, BigTreat
 from Colors import Colors
 
 
 class Board:
     def __init__(self, board_file_txt, factor):
         self.__board_file = board_file_txt
-        self.__factor = factor
+        self.__factor = factor  # factor musi być podzielny na 5 (bo o 5 pikseli porzusza się w jednej klatce pacman)
         self.__length = None
         self.__width = None
         self.__walls = []
         self.__walls_xy = []
         self.__ghosts = []
-        self.__ghosts_xy = []
-        self.__smaczki = []
+        self.__treats = []
         self.__pacman = None
+        self.grid = dict()
 
         with open(self.__board_file) as board_txt:
 
@@ -33,15 +34,17 @@ class Board:
                 for element in line:
                     # print(element)
                     if element == ' ':
-                        self.__smaczki.append((n * self.__factor, line_number * self.__factor))
+                        self.__treats.append(Treat(n, line_number, self))
+                    if element == 't':
+                        self.__treats.append(BigTreat(n, line_number, self))
                     if element == '#':
-                        self.__walls.append(Wall(n * self.__factor, line_number * self.__factor, self))
+                        self.__walls.append(Wall(n, line_number, self))
                         self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
+                        # self.__walls_xy.append((n * self.__factor + self.__factor // 2, line_number * self.__factor + self.__factor // 2))
                     if element == 'g':
-                        self.__ghosts.append(Ghost(n * self.__factor, line_number * self.__factor, self))
-                        self.__ghosts_xy.append((n * self.__factor, line_number * self.__factor))
+                        self.__ghosts.append(Ghost(n, line_number, self))
                     if element == 'p':
-                        self.__pacman = Pacman(n * self.__factor, line_number * self.__factor, self)
+                        self.__pacman = Pacman(n, line_number, self)
                     n += 1
                 line_number += 1
             self.__length = (len(line) * self.__factor)
@@ -72,19 +75,15 @@ class Board:
         return self.__ghosts
 
     @property
-    def ghosts_xy(self):
-        return self.__ghosts_xy
-
-    @property
     def pacman(self):
         return self.__pacman
 
     @property
-    def smaczki(self):
-        return self.__smaczki
+    def treats(self):
+        return self.__treats
 
     def usun_smaczek(self, value):
-        self.__smaczki.remove(value)
+        self.__treats.remove(value)
 
 
 def sign(n):
@@ -160,19 +159,10 @@ if __name__ == '__main__':
         for ghost in board.ghosts:
             ghost.draw(screen)
 
-        # for j in range(len(board.ghosts_xy)):
-        #     ghost = board.ghosts_xy[j]
-        #     ghost_color = ghosts_colors[j]
-        #
-        #     pygame.draw.circle(screen, ghost_color, (ghost[0] + board.factor / 2, ghost[1] + board.factor / 2),
-        #                        board.factor / 2)  # surface, color, center, radius
-
-        for smaczek in board.smaczki:
-            if smaczek == pacman.position:
-                board.usun_smaczek(smaczek)
-            pygame.draw.circle(screen, Colors.WHITE,
-                               (smaczek[0] + factor / 2, smaczek[1] + factor / 2),
-                               5)
+        for treat in board.treats:
+            if treat.position == pacman.position:
+                board.usun_smaczek(treat)
+            treat.draw(screen)
 
         pacman.draw(screen)
         pygame.display.update()  # Or pygame.display.flip()
