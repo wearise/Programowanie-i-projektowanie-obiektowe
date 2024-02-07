@@ -6,10 +6,10 @@ from abc import ABC, abstractmethod
 class Strategy(ABC):
 
     def __init__(self, obj: "MovingObject"):
-        self.obj = obj
+        self._obj = obj
 
     @abstractmethod
-    def next_direction(self):
+    def next_direction(self):#, objects_position: tuple, list_of_walls: list):
         pass
 
 
@@ -17,8 +17,11 @@ class RandomStrategy(Strategy):
 
     def __init__(self, obj: "MovingObject"):
         super().__init__(obj)
-    def next_direction(self):
-        pass
+
+    def next_direction(self):# w domyśle: , objects_position: tuple, list_of_walls: list):
+
+        if self._obj.position == self._obj:
+            pass
 
 
 class FollowStrategy(Strategy):

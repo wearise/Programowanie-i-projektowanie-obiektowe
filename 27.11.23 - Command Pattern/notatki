@@ -7,7 +7,7 @@ powinien być jakiś device na którym on to rysuje, więc niech Turtle ma jeszc
 to co robi żółw, to ma znać swoje aktualne położenie: x, y, alpha, pen (czy pióro jest poniesione
 czy opuszczone
 
-Graphic device może to być ekran, może być svg, któe umie narysować kreskę
+Graphic device może to być ekran, może być svg, które umie narysować kreskę
 
 czym się różni fabryka klas od dyspozytora !!!
 

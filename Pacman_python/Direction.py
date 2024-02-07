@@ -15,31 +15,59 @@ class Direction:
     # DOWN = (0, 1)
 
     @staticmethod
-    def random_direction():
+    def random_direction(all_or_list_of_directions_to_draw):
         x = int.from_bytes(os.urandom(8), byteorder="big") / ((1 << 64) - 1)
 
-        if x < 0.25:
-            return Direction.LEFT
+        if all_or_list_of_directions_to_draw == "all":
+            if x < 0.25:
+                return Direction.LEFT
 
-        elif x < 0.5:
-            return Direction.RIGHT
+            elif x < 0.5:
+                return Direction.RIGHT
 
-        elif x < 0.75:
-            return Direction.UP
+            elif x < 0.75:
+                return Direction.UP
+
+            else:
+                return Direction.DOWN
+
+        elif (isinstance(all_or_list_of_directions_to_draw, list)
+              and sum([isinstance(x, tuple) for x in all_or_list_of_directions_to_draw]) ==
+              len(all_or_list_of_directions_to_draw)):  # sprawdzam czy wszystkie elemwnty listy są tuplami
+
+            dx = 1 / len(all_or_list_of_directions_to_draw)
+
+            j = 0
+
+            i = dx
+
+            while i <= 1:
+
+                print(x, i)
+
+                if x < i:
+                    return all_or_list_of_directions_to_draw[j]
+
+                j += 1
+
+                i += dx
+
+                print(i)
+
 
         else:
-            return Direction.DOWN
+            raise Exception("Invalid argument")
 
-    @staticmethod
-    def opposite_direction(direction: tuple) -> tuple:
-        if direction == Direction.LEFT:
-            return Direction.RIGHT
-        if direction == Direction.RIGHT:
-            return Direction.LEFT
-        if direction == Direction.UP:
-            return Direction.DOWN
-        if direction == Direction.DOWN:
-            return Direction.UP
+    # @staticmethod
+    # def opposite_direction(direction: tuple) -> tuple:
+    #     if direction == Direction.LEFT:
+    #         return Direction.RIGHT
+    #     if direction == Direction.RIGHT:
+    #         return Direction.LEFT
+    #     if direction == Direction.UP:
+    #         return Direction.DOWN
+    #     if direction == Direction.DOWN:
+    #         return Direction.UP
 
     @staticmethod
     def map_from_event_key(event_key: int) -> tuple:

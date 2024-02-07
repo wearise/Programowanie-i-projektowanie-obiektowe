@@ -91,7 +91,7 @@ class Structure:
     # ta metoda ma zwracać iterator po atomach struktury
     def residues(self):
         return Iterable(ResiduesInStructureIterator(self))
-
+        # return ResiduesInStructureIterator(self)
 
 @dataclass
 class Chain:

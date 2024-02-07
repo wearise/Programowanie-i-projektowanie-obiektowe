@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
     # create a text surface object,
     # on which text is drawn on it.
-    text = font.render('GeeksForGeeks', True, Colors.GREEN, Colors.MINT)
+    text = font.render('GeeksForGeeks', True, Colors.BLACK, Colors.MINT)
 
     # create a rectangular object for the
     # text surface object
