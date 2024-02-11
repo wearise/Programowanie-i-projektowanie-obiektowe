@@ -6,6 +6,8 @@ from Colors import Colors
 from copy import copy
 
 
+# funkcja sign jest potrzebna, bo pacman w jednej klatce
+# przesówa się o 5 pikseli, a my chcemy tylko wyłapać kierunek
 def sign(n):
     if n < 0:
         return -1
@@ -73,9 +75,31 @@ class MovingObject(ABC):
     @current_tile.setter
     def current_tile(self, tile: tuple):
         self._current_tile = tile
-    @abstractmethod
+
+    # @abstractmethod
+    # def move(self):
+    #     pass
+
     def move(self):
-        pass
+
+        # żeby było bardziej przejrzyście
+        new_direction = self._new_direction
+
+        # pacman porusza się cały czas w kierunku self._direction,
+        # a skręcamy tylko w korytarze o szerokości board.factor -> self._direction = new_direction
+        # wtedy też zmieniamy aktualny kafelek
+        if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
+            self._current_tile = self._position
+            # to robi że nie staje na brzegach prostokąta (kiedy idziemy w prawo i klikniemy w górę to się zatrzmuje)
+            if not self._board.is_wall_there((self._position[0] + sign(new_direction[0]) * self._board.factor,
+            self._position[1] + sign(new_direction[1]) * self._board.factor)):
+                self._direction = new_direction
+            # self._direction = new_direction
+
+        # kiedy już wszystko posprawdzaliśmy, zmieniamy pozycję jego środka i samego pacmana
+        if not self._board.is_wall_there((self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor)):
+            self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
+            self._center = (self._center[0] + self._direction[0], self._center[1] + self._direction[1])
 
     def draw(self, screen: "pygame.surface.Surface"):
         pygame.draw.circle(screen, self._color,
@@ -90,9 +114,16 @@ class Pacman(MovingObject):
 
     def onKeyPressed(self, event_key: int):
 
+        # tutaj ustawiam tylko zapisywanie przyciśniętego klawisza,
+        # nie zmienia to od razu kierunku poruszania się pacmana
         new_direction = Direction.map_from_event_key(event_key)
 
-        # do sprawdzania czy tam gdzie chcemy pójść nie ma ściany
+        # zapisuję zmienną lokalną new_direction do pola pacmana tylko wtedy kiedy to ma rzeczywiście sens,
+        # czyli kiedy tam gdzi chcemy pójść rzeczywiście nie ma ściany
+
+        # kafelek zmienia się kiedy znajdzie się w nim cały pacman i jest szerokości board.facor,
+        # tworzę tuple pomocnicze, tupla1 - sprawdzam czy kafelek w tę stronę gdzie chcemy pójść
+        # nie jest "w ścianach"
         tupla1 = (self._current_tile[0] + sign(new_direction[0]) * self._board.factor,
             self._current_tile[1] + sign(new_direction[1]) * self._board.factor)
 
@@ -100,43 +131,45 @@ class Pacman(MovingObject):
         tupla2 = (tupla1[0] + sign(self._direction[0]) * self._board.factor,
             tupla1[1] + sign(self._direction[1]) * self._board.factor)
 
-        # żeby łapało jeszcze chwilkę wcześniej
+        # wersja dla gapiów - dwa kafelki wcześniej
         tupla3 = (tupla1[0] + 2 * sign(self._direction[0]) * self._board.factor,
             tupla1[1] + 2 * sign(self._direction[1]) * self._board.factor)
 
-
-        if tupla1 not in self._board.walls_xy or tupla2 not in self._board.walls_xy or tupla3 not in self._board.walls_xy:
+        # wykorzystuję wcześniej utworzone tuple i sprawdzam czy faktycznie tam gdzie chcę pójśc nie ma ścian
+        # if tupla1 not in self._board.walls_xy or tupla2 not in self._board.walls_xy or tupla3 not in self._board.walls_xy:
+        if not self._board.is_wall_there(tupla1) or not self._board.is_wall_there(tupla2) or not self._board.is_wall_there(tupla3):
             # print("changed")
             self._new_direction = new_direction
 
-    def move(self):
-
-        # print(self._position[0] % self._board.factor, self._position[1] % self._board.factor)
-        new_direction = self._new_direction
-
-        # skręcamy tylko w korytarze o szerokości board.factor
-        if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
-            # wtedy też zmienia się aktualny kafelek
-            self._current_tile = self._position
-            # to robi że nie staje na brzegach prostokąta (kiedy idziemy w prawo i klikniemy w górę to się zatrzmuje)
-            if (self._position[0] + sign(new_direction[0]) * self._board.factor,
-            self._position[1] + sign(new_direction[1]) * self._board.factor) not in self._board.walls_xy:
-                self._direction = new_direction
-            # self._direction = new_direction
-
-        # kiedy już wszystko posprawdzaliśmy, zmieniamy pozycję pacmana
-        if (self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor) not in self._board.walls_xy:
-            self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
-            self._center = (self._center[0] + self._direction[0], self._center[1] + self._direction[1])
+    # def move(self):
+    #
+    #     # żeby było bardziej przejrzyście
+    #     new_direction = self._new_direction
+    #
+    #     # pacman porusza się cały czas w kierunku self._direction,
+    #     # a skręcamy tylko w korytarze o szerokości board.factor -> self._direction = new_direction
+    #     # wtedy też zmieniamy aktualny kafelek
+    #     if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
+    #         self._current_tile = self._position
+    #         # to robi że nie staje na brzegach prostokąta (kiedy idziemy w prawo i klikniemy w górę to się zatrzmuje)
+    #         if not self._board.is_wall_there((self._position[0] + sign(new_direction[0]) * self._board.factor,
+    #         self._position[1] + sign(new_direction[1]) * self._board.factor)):
+    #             self._direction = new_direction
+    #         # self._direction = new_direction
+    #
+    #     # kiedy już wszystko posprawdzaliśmy, zmieniamy pozycję jego środka i samego pacmana
+    #     if not self._board.is_wall_there((self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor)):
+    #         self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
+    #         self._center = (self._center[0] + self._direction[0], self._center[1] + self._direction[1])
 
 
 class Ghost(MovingObject):
 
-    def __init__(self, x: int, y: int, board: "Board"):#, strategy: "Strategy"):
+    def __init__(self, x: int, y: int, board: "Board"):  #, strategy: "Strategy"):
         super().__init__(x, y, board)
         # self._strategy = strategy
         self._color = Colors.random_RGB()
-        self._direction = Direction.random_direction("all")
+        self._direction = Direction.random_direction([x for x in Direction.all_directions if not self._board.is_wall_there((self._position[0] + sign(x[0])*self._board.factor, self._position[1] + sign(x[1])*self._board.factor))])
         self._able_to_be_eaten = False
         self._how_long_it_can_be_eaten = 0
 
@@ -156,11 +189,22 @@ class Ghost(MovingObject):
     def how_long_it_can_be_eaten(self, value: bool):
         self._how_long_it_can_be_eaten = value
 
-    def move(self):
-        if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
-            self._current_tile = self._position
-            # self._direction = self._strategy.next_direction()
+    def set_direction(self):
 
-        if (self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor) not in self._board.walls_xy:
-            self._position = (self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor)
-            # self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
+        possible_directions = [x for x in Direction.ghost_possible_directions(self._direction)
+        if not self._board.is_wall_there((self._position[0] + sign(x[0]) * self._board.factor,
+        self._position[1] + sign(x[1]) * self._board.factor))]
+        if not self._board.is_wall_there((self._position[0] + sign(self._direction[0]) * self._board.factor,
+        self._position[1] + sign(self._direction[1]) * self._board.factor)):
+            possible_directions.append(self._direction)
+        self._new_direction = Direction.random_direction(possible_directions)
+        # pass
+
+    # def move(self):
+    #     if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
+    #         self._current_tile = self._position
+    #         # self._direction = self._strategy.next_direction()
+    #
+    #     if not self._board.is_wall_there((self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor)):
+    #         self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
+    #         self._center = (self._center[0] + self._direction[0], self._center[1] + self._direction[1])
