@@ -165,9 +165,9 @@ class Pacman(MovingObject):
 
 class Ghost(MovingObject):
 
-    def __init__(self, x: int, y: int, board: "Board"):  #, strategy: "Strategy"):
+    def __init__(self, x: int, y: int, board: "Board", strategy: "Strategy"):
         super().__init__(x, y, board)
-        # self._strategy = strategy
+        self._strategy = strategy
         self._color = Colors.random_RGB()
         self._direction = Direction.random_direction([x for x in Direction.all_directions if not self._board.is_wall_there((self._position[0] + sign(x[0])*self._board.factor, self._position[1] + sign(x[1])*self._board.factor))])
         self._able_to_be_eaten = False
@@ -191,14 +191,14 @@ class Ghost(MovingObject):
 
     def set_direction(self):
 
-        possible_directions = [x for x in Direction.ghost_possible_directions(self._direction)
-        if not self._board.is_wall_there((self._position[0] + sign(x[0]) * self._board.factor,
-        self._position[1] + sign(x[1]) * self._board.factor))]
-        if not self._board.is_wall_there((self._position[0] + sign(self._direction[0]) * self._board.factor,
-        self._position[1] + sign(self._direction[1]) * self._board.factor)):
-            possible_directions.append(self._direction)
-        self._new_direction = Direction.random_direction(possible_directions)
-        # pass
+        # possible_directions = [x for x in Direction.ghost_possible_directions(self._direction)
+        # if not self._board.is_wall_there((self._position[0] + sign(x[0]) * self._board.factor,
+        # self._position[1] + sign(x[1]) * self._board.factor))]
+        # if not self._board.is_wall_there((self._position[0] + sign(self._direction[0]) * self._board.factor,
+        # self._position[1] + sign(self._direction[1]) * self._board.factor)):
+        #     possible_directions.append(self._direction)
+        # self._new_direction = Direction.random_direction(possible_directions)
+        self._new_direction = self._strategy.next_direction(self._position, self._direction, self._board)
 
     # def move(self):
     #     if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:

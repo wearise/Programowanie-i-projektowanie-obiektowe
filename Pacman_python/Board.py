@@ -41,7 +41,7 @@ class Board:
                         self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
                         # self.__walls_xy.append((n * self.__factor + self.__factor // 2, line_number * self.__factor + self.__factor // 2))
                     elif element == 'g':
-                        self.__ghosts.append(Ghost(n, line_number, self))
+                        self.__ghosts.append(Ghost(n, line_number, self, RandomStrategy()))
                     elif element == 'p':
                         self.__pacman = Pacman(n, line_number, self)
                     n += 1
