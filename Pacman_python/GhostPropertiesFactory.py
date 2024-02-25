@@ -10,6 +10,8 @@ class GhostPropertiesFactory:
 
     @staticmethod
     def get_ghost_properties() -> "GhostProperties":
+        if GhostPropertiesFactory.__index == len(GhostPropertiesFactory.__strategies):
+            GhostPropertiesFactory.__index = 0
         GhostPropertiesFactory.__index += 1
         return GhostProperties(GhostPropertiesFactory.__strategies[GhostPropertiesFactory.__index-1],
                                GhostPropertiesFactory.__colors[GhostPropertiesFactory.__index-1],
