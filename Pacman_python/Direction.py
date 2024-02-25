@@ -9,17 +9,21 @@ class Direction:
     DOWN = (0, 5)
 
     all_directions = [LEFT, RIGHT, UP, DOWN]
+
+    # LEFT = (-6, 0)
+    # RIGHT = (6, 0)
+    # UP = (0, -6)
+    # DOWN = (0, 6)
     #
-    # LEFT = (-1, 0)
-    # RIGHT = (1, 0)
-    # UP = (0, -1)
-    # DOWN = (0, 1)
+    # all_directions = [LEFT, RIGHT, UP, DOWN]
+
 
     @staticmethod
     def random_direction(all_or_list_of_directions_to_draw):
         x = int.from_bytes(os.urandom(8), byteorder="big") / ((1 << 64) - 1)
 
-        if all_or_list_of_directions_to_draw == "all":
+        if all_or_list_of_directions_to_draw == "all" or (isinstance(all_or_list_of_directions_to_draw, list) and len( all_or_list_of_directions_to_draw)==0):#(isinstance(all_or_list_of_directions_to_draw, list):
+
             if x < 0.25:
                 return Direction.LEFT
 
@@ -55,9 +59,9 @@ class Direction:
     def ghost_possible_directions(its_actual_direction: tuple) -> list:
         # duszek nie ma możliwości cofania się
         if its_actual_direction == Direction.LEFT or its_actual_direction == Direction.RIGHT:
-            return [Direction.UP, Direction.DOWN]
+            return [Direction.UP, Direction.DOWN, its_actual_direction]
         if its_actual_direction == Direction.UP or its_actual_direction == Direction.DOWN:
-            return [Direction.RIGHT, Direction.LEFT]
+            return [Direction.RIGHT, Direction.LEFT, its_actual_direction]
 
     @staticmethod
     def map_from_event_key(event_key: int) -> tuple:

@@ -20,9 +20,9 @@ class Board:
         self.__width = None
         self.__walls = []
         self.__walls_xy = []
-        self.__ghosts = []
+        self._ghosts = []
         self.__treats = []
-        self.__pacman = None
+        self._pacman = None
         self.grid = dict()
 
         with open(self.__board_file) as board_txt:
@@ -38,16 +38,18 @@ class Board:
                         self.__treats.append(BigTreat(n, line_number, self))
                     elif element == '#':
                         self.__walls.append(Wall(n, line_number, self))
-                        self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
+                        # self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
                         # self.__walls_xy.append((n * self.__factor + self.__factor // 2, line_number * self.__factor + self.__factor // 2))
                     elif element == 'g':
-                        self.__ghosts.append(Ghost(n, line_number, self, RandomStrategy()))
+                        self._ghosts.append(Ghost(n, line_number, self, RandomStrategy()))
                     elif element == 'p':
-                        self.__pacman = Pacman(n, line_number, self)
+                        self._pacman = Pacman(n, line_number, self)
                     n += 1
                 line_number += 1
+
             self.__length = (len(line) * self.__factor)
             self.__width = (line_number * self.__factor)
+            self.__walls_xy = [wall.position for wall in self.__walls]
 
     @property
     def factor(self) -> int:
@@ -71,14 +73,15 @@ class Board:
 
     @property
     def ghosts(self) -> list:
-        return self.__ghosts
+        return self._ghosts
 
-    def delete_ghost(self, ghost: "Ghost"):
-        self.__ghosts.remove(ghost)
+    def draw_ghosts(self, screen: "pygame.surface.Surface"):
+        for ghost in self._ghosts:
+            ghost.draw(screen)
 
     @property
     def pacman(self) -> "Pacman":
-        return self.__pacman
+        return self._pacman
 
     @property
     def treats(self) -> list:
@@ -89,3 +92,9 @@ class Board:
 
     def is_wall_there(self, position: tuple) -> bool:
         return self.__walls_xy.__contains__(position)
+
+    def reset_objects_positions(self):
+        self._pacman.reset_position()
+        self._pacman.reset_directions()
+        for ghost in self._ghosts:
+            ghost.reset_position()
