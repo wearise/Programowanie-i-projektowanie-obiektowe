@@ -1,9 +1,5 @@
-# import pygame
 from abc import ABC, abstractmethod
 from Direction import Direction
-
-
-# from MovingObject import MovingObject
 
 # funkcja sign jest potrzebna, bo pacman w jednej klatce
 # przesówa się o 5 pikseli, a my chcemy tylko wyłapać kierunek
