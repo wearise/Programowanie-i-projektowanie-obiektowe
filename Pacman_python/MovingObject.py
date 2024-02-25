@@ -19,7 +19,6 @@ class MovingObject(ABC):
         self._direction = (0, 0)
         self._new_direction = (0, 0)
         self._speed = Speed(board.factor)
-        self._current_tile = (x * board.factor, y * board.factor)
         self._waiting = 0
 
     @property
@@ -78,39 +77,12 @@ class MovingObject(ABC):
     def speed(self, new_speed: int):
         self._speed = new_speed
 
-    # @property
-    # def current_tile(self):
-    #     return self._current_tile
-    #
-    # @current_tile.setter
-    # def current_tile(self, tile: tuple):
-    #     self._current_tile = tile
-
     def reset_position(self):
         self._position = self._starting_position
         self._center = self.starting_center
 
     def move(self):
 
-        # if not self._waiting:
-        #     # żeby było bardziej przejrzyście
-        #     new_direction = self._new_direction
-        #
-        #     # pacman porusza się cały czas w kierunku self._direction,
-        #     # a skręcamy tylko w korytarze o szerokości board.factor -> self._direction = new_direction
-        #     # wtedy też zmieniamy aktualny kafelek
-        #     if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
-        #         self._current_tile = self._position
-        #         # to robi że nie staje na brzegach prostokąta (kiedy idziemy w prawo i klikniemy w górę to się zatrzmuje)
-        #         if not self._board.is_wall_there((self._position[0] + sign(new_direction[0]) * self._board.factor,
-        #         self._position[1] + sign(new_direction[1]) * self._board.factor)):
-        #             self._direction = new_direction
-        #         # self._direction = new_direction
-        #
-        #     # kiedy już wszystko posprawdzaliśmy, zmieniamy pozycję jego środka i samego pacmana
-        #     if not self._board.is_wall_there((self._position[0] + sign(self._direction[0])*self._board.factor, self._position[1] + sign(self._direction[1])*self._board.factor)):
-        #         self._position = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
-        #         self._center = (self._center[0] + self._direction[0], self._center[1] + self._direction[1])
         if not self._waiting:
             # żeby było bardziej przejrzyście
             new_direction = self._new_direction
@@ -119,7 +91,6 @@ class MovingObject(ABC):
             # a skręcamy tylko w korytarze o szerokości board.factor -> self._direction = new_direction
             # wtedy też zmieniamy aktualny kafelek
             if self._position[0] % self._board.factor == 0 and self._position[1] % self._board.factor == 0:
-                self._current_tile = self._position
                 # to robi że nie staje na brzegach prostokąta (kiedy idziemy w prawo i klikniemy w górę to się zatrzmuje)
                 if not self._board.is_wall_there((self._position[0] + new_direction[0] * self._board.factor,
                 self._position[1] + new_direction[1] * self._board.factor)):
@@ -142,7 +113,7 @@ class Pacman(MovingObject):
     def __init__(self, x: int, y: int, board: "Board"):
         super().__init__(x, y, board)
         self._color = Colors.YELLOW
-        self._lives = 3  # _lives: int = 3
+        self._lives = 3
 
     @property
     def lives(self):
@@ -152,38 +123,15 @@ class Pacman(MovingObject):
         self._lives -= 1
 
     def reset_directions(self):
-        self._direction = (0,0)
-        self._new_direction = (0,0)
+        self._direction = (0, 0)
+        self._new_direction = (0, 0)
 
     def onKeyPressed(self, event_key: int):
 
         # tutaj ustawiam tylko zapisywanie przyciśniętego klawisza,
         # nie zmienia to od razu kierunku poruszania się pacmana
         new_direction = Direction.map_from_event_key(event_key)
-
-        # zapisuję zmienną lokalną new_direction do pola pacmana tylko wtedy kiedy to ma rzeczywiście sens,
-        # czyli kiedy tam gdzi chcemy pójść rzeczywiście nie ma ściany
-
-        # kafelek zmienia się kiedy znajdzie się w nim cały pacman i jest szerokości board.facor,
-        # tworzę tuple pomocnicze, tupla1 - sprawdzam czy kafelek w tę stronę gdzie chcemy pójść
-        # nie jest "w ścianach"
-        # current_tile = (self._position[0]//self._board.factor, self._position[1]//self._board.factor)
-        tupla1 = (self._current_tile[0] + new_direction[0] * self._board.factor,
-                  self._current_tile[1] + new_direction[1] * self._board.factor)
-
-        # tak samo jak wyżej, tylko żeby załapało kafelek wcześniej
-        tupla2 = (tupla1[0] + self._direction[0] * self._board.factor,
-            tupla1[1] + self._direction[1] * self._board.factor)
-
-        # wersja dla gapiów - dwa kafelki wcześniej
-        tupla3 = (tupla1[0] + 2 * self._direction[0] * self._board.factor,
-            tupla1[1] + 2 * self._direction[1] * self._board.factor)
-
-        # wykorzystuję wcześniej utworzone tuple i sprawdzam czy faktycznie tam gdzie chcę pójśc nie ma ścian
-        # if tupla1 not in self._board.walls_xy or tupla2 not in self._board.walls_xy or tupla3 not in self._board.walls_xy:
-        if not self._board.is_wall_there(tupla1) or not self._board.is_wall_there(tupla2) or not self._board.is_wall_there(tupla3):
-            # print("changed")
-            self._new_direction = new_direction
+        self._new_direction = new_direction
 
 
 class Ghost(MovingObject):
