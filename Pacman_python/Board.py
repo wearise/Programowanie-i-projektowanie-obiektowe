@@ -72,15 +72,10 @@ class Board:
     def treats(self) -> list:
         return self.__treats
 
-    def usun_smaczek(self, treat: "Treat"):
-        self.__treats.remove(treat)
-
     def is_wall_there(self, position: tuple) -> bool:
         return self.__walls_xy.__contains__(position)
 
     def are_all_treats_eaten(self) -> bool:
-        # if sum([treat.is_eaten() for treat in self.__treats])/len(self.__treats) == 1
-        #
         for treat in self.__treats:
             if not treat.is_eaten:
                 return False
