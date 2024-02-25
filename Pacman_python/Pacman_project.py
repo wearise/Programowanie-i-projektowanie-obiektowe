@@ -93,21 +93,15 @@ if __name__ == '__main__':
                         ghost.speed.reset_speed()
                     ghost.draw(screen)
 
-            # if pacman.lives == 0:
-            #     game_finished = 1
-            #     # board.draw_ghosts(screen)
-            #     screen.blit(przegranko_text, textRect)
-
             if board.are_all_treats_eaten():
                 game_finished = 1
                 screen.blit(wygranko_text, textRect2)
 
             lives_text = font.render("lives: "+str(pacman.lives), True, Colors.WHITE, Colors.BLACK)
             screen.blit(lives_text, textRect3)
-            pacman.draw(screen) # ???
+            pacman.draw(screen)
             pygame.display.update()  # Or pygame.display.flip()
 
             i += 1
-            # print(i)
 
     pygame.quit()
