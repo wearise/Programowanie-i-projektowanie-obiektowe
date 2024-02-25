@@ -13,25 +13,15 @@ from Colors import Colors
 from Board import Board
 from GameConstants import GameConstants
 
-# def sign(n):
-#     if n < 0:
-#         return -1
-#     elif n > 0:
-#         return 1
-#     else:
-#         return 0
-
 
 if __name__ == '__main__':
 
     pygame.init()
-    board = Board("board2.txt", GameConstants.FACTOR)#("board2.txt", 30)
-    # with open("easy_board.txt") as board:
-    # screen = pygame.display.set_mode((board.length, board.width + board.factor))
+    board = Board("board2.txt", GameConstants.FACTOR)
     screen1 = pygame.display.set_mode((board.length, board.width + board.factor))
     screen2 = pygame.display.set_mode((board.length, board.width + board.factor))
     clock = pygame.time.Clock()
-    # FPS = 20  # Frames per second.
+    FPS = GameConstants.FPS  # Frames per second.
 
     factor = board.factor
     pacman = board.pacman
@@ -46,7 +36,7 @@ if __name__ == '__main__':
     textRect2 = wygranko_text.get_rect()
     textRect2.center = (board.length // 2, board.width // 2)
     textRect3 = wygranko_text.get_rect()
-    textRect3.center = (board.length - board.factor, board.width + board.factor //2)  # (board.length - board.factor//10, board.width + board.factor //2)
+    textRect3.center = (board.length - board.factor, board.width + board.factor // 2)  # (board.length - board.factor//10, board.width + board.factor //2)
 
     screen1.fill(Colors.BLACK)
 
@@ -67,9 +57,8 @@ if __name__ == '__main__':
     game_finished = 0
     i = 0
     while Game:
-        clock.tick(GameConstants.FPS)
 
-        # lives_text = font.render(str(pacman.lives), True, Colors.WHITE, Colors.BLACK)
+        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -101,10 +90,10 @@ if __name__ == '__main__':
             for treat in board.treats:
                 treat.draw(next_screen)
                 if treat.center == pacman.center:
+                    treat.eat()
                     if isinstance(treat, BigTreat):
                         BigTreatCollision.execute_collision(board.ghosts)
                     # print(treat)
-                    board.usun_smaczek(treat)
 
             for ghost in board.ghosts:
                 if ghost.waiting > 0:
@@ -112,29 +101,19 @@ if __name__ == '__main__':
 
                 if board.ghost_pacman_are_too_close(ghost):
 
-                    if ghost.how_long_it_can_be_eaten > 0:
-                        ghost.how_long_it_can_be_eaten = 0
-                        ghost.reset_position()
-                        ghost.waiting = 5 * GameConstants.FPS
-                    else:
-                        pacman.life_lost()
-                        board.ghosts_no_able_to_be_eaten()
-                        board.ghosts_restart_waiting()
+                    GhostCollision.execute_collision(board, ghost)
 
+                    if not ghost.how_long_it_can_be_eaten:
                         if pacman.lives == 0:
                             game_finished = 1
                             screen.blit(przegranko_text, textRect)
                         else:
                             board.reset_objects_positions()
                             break
-
+                    ghost.how_long_it_can_be_eaten = 0
                 ghost.set_direction()
-                # RUSZ DUSZKIEM:
                 ghost.move()
-                # if abs(ghost.center[0]-pacman.center[0]) < ghost.radius + pacman.radius and abs(ghost.center[1]-pacman.center[1]) < ghost.radius + pacman.radius:
-                #     screen.blit(text, textRect)
 
-                # if ghost.able_to_be_eaten == True:
                 if ghost.how_long_it_can_be_eaten > 0:
                     if i < 4:
                         ghost.draw(next_screen)
@@ -146,7 +125,6 @@ if __name__ == '__main__':
                 else:
                     if isinstance(ghost.strategy, RunAwayStrategy):
                         ghost.strategy = ghost.main_strategy
-                    # if ghost.position[0] % board.factor == 0 and ghost.position[1] % board.factor == 0:
                         ghost.speed.reset_speed()
                     ghost.draw(next_screen)
 
@@ -155,7 +133,7 @@ if __name__ == '__main__':
             #     # board.draw_ghosts(screen)
             #     screen.blit(przegranko_text, textRect)
 
-            if len(board.treats) == 0:
+            if board.are_all_treats_eaten():
                 game_finished = 1
                 screen.blit(wygranko_text, textRect2)
 

@@ -8,17 +8,6 @@ from GhostPropertiesFactory import GhostPropertiesFactory, GhostProperties
 from copy import copy
 
 
-# funkcja sign jest potrzebna, bo pacman w jednej klatce
-# przesówa się o 5 pikseli, a my chcemy tylko wyłapać kierunek
-def sign(n):
-    if n < 0:
-        return -1
-    elif n > 0:
-        return 1
-    else:
-        return 0
-
-
 class MovingObject(ABC):
     def __init__(self, x: int, y: int, board: "Board"):
         self._board = board
@@ -205,7 +194,7 @@ class Pacman(MovingObject):
 
 class Ghost(MovingObject):
 
-    def __init__(self, x: int, y: int, board: "Board", strategy: "Strategy"):
+    def __init__(self, x: int, y: int, board: "Board"):
         super().__init__(x, y, board)
         ghost_properties = GhostPropertiesFactory.get_ghost_properties()
         self._main_strategy = ghost_properties.strategy
@@ -215,7 +204,7 @@ class Ghost(MovingObject):
         self._waiting = ghost_properties.waiting
         self._direction = Direction.random_direction(
             [x for x in Direction.all_directions
-             if not self._board.is_wall_there((self._position[0] + sign(x[0])*self._board.factor, self._position[1] + sign(x[1])*self._board.factor))])
+             if not self._board.is_wall_there((self._position[0] + x[0]*self._board.factor, self._position[1] + x[1]*self._board.factor))])
         self._how_long_it_can_be_eaten = 0
 
     def restart_waiting(self):

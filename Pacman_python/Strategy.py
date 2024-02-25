@@ -22,8 +22,8 @@ class Strategy(ABC):
     def _possible_directions(self, object_position: tuple, object_direction: tuple, board: "Board") -> list:
 
         directions = [x for x in Direction.ghost_possible_directions(object_direction)
-                      if not board.is_wall_there((object_position[0] + sign(x[0]) * board.factor,
-                                                  object_position[1] + sign(x[1]) * board.factor))]
+                      if not board.is_wall_there((object_position[0] + x[0] * board.factor,
+                                                  object_position[1] + x[1] * board.factor))]
         return directions
 
     @abstractmethod

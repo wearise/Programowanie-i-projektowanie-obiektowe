@@ -8,7 +8,7 @@ from Strategy import RandomStrategy, FollowStrategy
 from Collisions import BigTreatCollision, GhostCollision
 from MovingObject import Pacman, Ghost
 from Wall import Wall
-from Treats import Treat, BigTreat
+from Treats import SmallTreat, BigTreat
 from Colors import Colors
 
 
@@ -31,17 +31,15 @@ class Board:
             for line in board_txt:
                 n = 0
                 for element in line:
-                    # print(element)
+
                     if element == ' ':
-                        self.__treats.append(Treat(n, line_number, self))
+                        self.__treats.append(SmallTreat(n, line_number, self))
                     elif element == 't':
                         self.__treats.append(BigTreat(n, line_number, self))
                     elif element == '#':
                         self.__walls.append(Wall(n, line_number, self))
-                        # self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
-                        # self.__walls_xy.append((n * self.__factor + self.__factor // 2, line_number * self.__factor + self.__factor // 2))
                     elif element == 'g':
-                        self._ghosts.append(Ghost(n, line_number, self, FollowStrategy()))
+                        self._ghosts.append(Ghost(n, line_number, self))
                     elif element == 'p':
                         self._pacman = Pacman(n, line_number, self)
                     n += 1
@@ -88,6 +86,14 @@ class Board:
 
     def is_wall_there(self, position: tuple) -> bool:
         return self.__walls_xy.__contains__(position)
+
+    def are_all_treats_eaten(self) -> bool:
+        # if sum([treat.is_eaten() for treat in self.__treats])/len(self.__treats) == 1
+        #
+        for treat in self.__treats:
+            if not treat.is_eaten:
+                return False
+        return True
 
     def ghost_pacman_are_too_close(self, ghost: "Ghost") -> bool:
         if (abs(ghost.center[0] - self._pacman.center[0]) < ghost.radius + self._pacman.radius and
