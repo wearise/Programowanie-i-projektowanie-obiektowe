@@ -1,7 +1,6 @@
 # import pygame
 from abc import ABC, abstractmethod
 from Direction import Direction
-from sign import *
 
 
 # from MovingObject import MovingObject
