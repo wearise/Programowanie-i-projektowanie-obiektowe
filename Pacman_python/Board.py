@@ -4,7 +4,7 @@ from copy import deepcopy, copy
 from abc import ABC, abstractmethod
 from Dispatch import Dispatch
 from Direction import Direction
-from Strategy import RandomStrategy#, FollowStrategy
+from Strategy import RandomStrategy, FollowStrategy
 from Collisions import BigTreatCollision, GhostCollision
 from MovingObject import Pacman, Ghost
 from Wall import Wall
@@ -41,7 +41,7 @@ class Board:
                         # self.__walls_xy.append((n * self.__factor, line_number * self.__factor))
                         # self.__walls_xy.append((n * self.__factor + self.__factor // 2, line_number * self.__factor + self.__factor // 2))
                     elif element == 'g':
-                        self._ghosts.append(Ghost(n, line_number, self, RandomStrategy()))
+                        self._ghosts.append(Ghost(n, line_number, self, FollowStrategy()))
                     elif element == 'p':
                         self._pacman = Pacman(n, line_number, self)
                     n += 1
@@ -75,10 +75,6 @@ class Board:
     def ghosts(self) -> list:
         return self._ghosts
 
-    def draw_ghosts(self, screen: "pygame.surface.Surface"):
-        for ghost in self._ghosts:
-            ghost.draw(screen)
-
     @property
     def pacman(self) -> "Pacman":
         return self._pacman
@@ -92,6 +88,19 @@ class Board:
 
     def is_wall_there(self, position: tuple) -> bool:
         return self.__walls_xy.__contains__(position)
+
+    def ghost_pacman_are_too_close(self, ghost: "Ghost") -> bool:
+        if (abs(ghost.center[0] - self._pacman.center[0]) < ghost.radius + self._pacman.radius and
+                abs(ghost.center[1] - self._pacman.center[1]) < ghost.radius + self._pacman.radius):
+            return True
+
+    def ghosts_no_able_to_be_eaten(self):
+        for ghost in self._ghosts:
+            ghost.how_long_it_can_be_eaten = 0
+
+    def ghosts_restart_waiting(self):
+        for ghost in self._ghosts:
+            ghost.restart_waiting()
 
     def reset_objects_positions(self):
         self._pacman.reset_position()

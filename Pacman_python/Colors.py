@@ -13,6 +13,7 @@ class Colors:
     YELLOW = (255, 255, 0)
     MINT = (int(0.667 * 255), int(0.941 * 255), int(0.82 * 255))
 
+    ghost_colors = list([RED, ORANGE, PINK, GREEN, MINT])
     __ghost_colors = list([RED, ORANGE, PINK, GREEN, MINT])
 
     @staticmethod

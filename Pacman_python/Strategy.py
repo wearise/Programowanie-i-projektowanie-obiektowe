@@ -20,12 +20,10 @@ def sign(n):
 class Strategy(ABC):
 
     def _possible_directions(self, object_position: tuple, object_direction: tuple, board: "Board") -> list:
+
         directions = [x for x in Direction.ghost_possible_directions(object_direction)
                       if not board.is_wall_there((object_position[0] + sign(x[0]) * board.factor,
                                                   object_position[1] + sign(x[1]) * board.factor))]
-        # if not board.is_wall_there((object_position[0] + sign(object_direction[0]) * board.factor,
-        #                             object_position[1] + sign(object_direction[1]) * board.factor)):
-        #     directions.append(object_direction)
         return directions
 
     @abstractmethod
@@ -38,33 +36,47 @@ class RandomStrategy(Strategy):
     def next_direction(self, object_position: tuple, object_direction: tuple, board: "Board"):
         possible_directions = self._possible_directions(object_position, object_direction, board)
         return Direction.random_direction(possible_directions)
-        # return Direction.random_direction(Strategy._possible_directions(self, object_position, object_direction, board))
+
+
+class FollowStrategy(Strategy):
+
+    def next_direction(self, object_position: tuple, object_direction: tuple, board: "Board"):
+        pacman = board.pacman
+
+        possible_directions = self._possible_directions(object_position, object_direction, board)
+
+        x_axis_diff = pacman.position[0] - object_position[0]
+        y_axis_diff = pacman.position[1] - object_position[1]
+
+        new_directions_priority = [(sign(x_axis_diff), 0), (0, sign(y_axis_diff))]
+
+        if abs(x_axis_diff) <= abs(y_axis_diff):
+            new_directions_priority.reverse()
+
+        for direction in new_directions_priority:
+            if direction in possible_directions:
+                return direction
+
+        return Direction.random_direction(possible_directions)
 
 
 class RunAwayStrategy(Strategy):
-
-    def _possible_directions(self, object_position: tuple, object_direction: tuple, board: "Board") -> list:
-        directions = [x for x in Direction.ghost_possible_directions(
-            (sign(object_direction[0]) * 5, sign(object_direction[1]) * 5))
-                      if not board.is_wall_there((object_position[0] + sign(x[0]) * board.factor,
-                                                  object_position[1] + sign(x[1]) * board.factor))]
-        # if not board.is_wall_there((object_position[0] + sign(object_direction[0]) * board.factor,
-        #                             object_position[1] + sign(object_direction[1]) * board.factor)):
-        #     directions.append(object_direction)
-        return directions
-
     def next_direction(self, object_position: tuple, object_direction: tuple, board: "Board"):
-        possible_directions = self._possible_directions(object_position, object_direction, board)
-        direction = Direction.random_direction(possible_directions)
-        return (sign(direction[0]) * 3, sign(direction[1]) * 3)
-        # return Direction.random_direction(Strategy._possible_directions(self, object_position, object_direction, board))
+        pacman = board.pacman
 
-# class FollowStrategy(Strategy):
-#
-#     def next_direction(self, object_position: tuple, object_direction: tuple, board: "Board"):
-#
-#         pacman_position = board.pacman.position
-#         possible_directions = self._possible_directions(object_position, object_direction, board)
-#
-#         if object_position
-#         return Direction.random_direction(possible_directions)
+        possible_directions = self._possible_directions(object_position, object_direction, board)
+
+        x_axis_diff = pacman.position[0] - object_position[0]
+        y_axis_diff = pacman.position[1] - object_position[1]
+
+        new_directions_priority = [(sign(x_axis_diff), 0), (0, sign(y_axis_diff))]
+
+        if abs(x_axis_diff) <= abs(y_axis_diff):
+            new_directions_priority.reverse()
+
+        for direction in new_directions_priority:
+            if Direction.opposite_direction(direction) in possible_directions:
+                return Direction.opposite_direction(direction)
+
+        return Direction.random_direction(possible_directions)
+

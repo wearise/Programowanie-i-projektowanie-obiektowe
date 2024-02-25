@@ -11,6 +11,7 @@ from Collisions import BigTreatCollision, GhostCollision
 from Treats import Treat, BigTreat
 from Colors import Colors
 from Board import Board
+from GameConstants import GameConstants
 
 # def sign(n):
 #     if n < 0:
@@ -24,13 +25,13 @@ from Board import Board
 if __name__ == '__main__':
 
     pygame.init()
-    board = Board("board2.txt", 30)#("board2.txt", 30)
+    board = Board("board2.txt", GameConstants.FACTOR)#("board2.txt", 30)
     # with open("easy_board.txt") as board:
     # screen = pygame.display.set_mode((board.length, board.width + board.factor))
     screen1 = pygame.display.set_mode((board.length, board.width + board.factor))
     screen2 = pygame.display.set_mode((board.length, board.width + board.factor))
     clock = pygame.time.Clock()
-    FPS = 20  # Frames per second.
+    # FPS = 20  # Frames per second.
 
     factor = board.factor
     pacman = board.pacman
@@ -38,8 +39,8 @@ if __name__ == '__main__':
 
     pygame.display.set_caption('Show Text')
     font = pygame.font.Font('freesansbold.ttf', 32)
-    przegranko_text = font.render('PRZEGRANKO', True, Colors.BLACK, Colors.MINT)
-    wygranko_text = font.render('WYGRANKO', True, Colors.BLACK, Colors.ORANGE)
+    przegranko_text = font.render('PRZEGRANKO', True, Colors.BLACK, Colors.WHITE)
+    wygranko_text = font.render('WYGRANKO', True, Colors.BLACK, Colors.WHITE)
     textRect = przegranko_text.get_rect()
     textRect.center = (board.length // 2, board.width // 2)
     textRect2 = wygranko_text.get_rect()
@@ -66,7 +67,7 @@ if __name__ == '__main__':
     game_finished = 0
     i = 0
     while Game:
-        clock.tick(FPS)
+        clock.tick(GameConstants.FPS)
 
         # lives_text = font.render(str(pacman.lives), True, Colors.WHITE, Colors.BLACK)
 
@@ -101,28 +102,32 @@ if __name__ == '__main__':
                 treat.draw(next_screen)
                 if treat.center == pacman.center:
                     if isinstance(treat, BigTreat):
-                        BigTreatCollision.execute_collision(board.ghosts, pacman.position)
+                        BigTreatCollision.execute_collision(board.ghosts)
                     # print(treat)
                     board.usun_smaczek(treat)
 
             for ghost in board.ghosts:
                 if ghost.waiting > 0:
                     ghost.waiting -= 1
-                # jeżeli środki są oddalone o sumę promieni
-                if abs(ghost.center[0]-pacman.center[0]) < ghost.radius + pacman.radius and abs(ghost.center[1]-pacman.center[1]) < ghost.radius + pacman.radius:
-                    if ghost._how_long_it_can_be_eaten > 0:
-                        ghost._how_long_it_can_be_eaten = 0
+
+                if board.ghost_pacman_are_too_close(ghost):
+
+                    if ghost.how_long_it_can_be_eaten > 0:
+                        ghost.how_long_it_can_be_eaten = 0
                         ghost.reset_position()
-                        ghost.waiting = 3 * FPS
+                        ghost.waiting = 5 * GameConstants.FPS
                     else:
                         pacman.life_lost()
-                        board.reset_objects_positions()
-                        break
-                    # if ghost._how_long_it_can_be_eaten <= 0:
-                    #     pacman.life_lost()
-                    #     board.reset_objects_positions()
-                    #
-                    # break
+                        board.ghosts_no_able_to_be_eaten()
+                        board.ghosts_restart_waiting()
+
+                        if pacman.lives == 0:
+                            game_finished = 1
+                            screen.blit(przegranko_text, textRect)
+                        else:
+                            board.reset_objects_positions()
+                            break
+
                 ghost.set_direction()
                 # RUSZ DUSZKIEM:
                 ghost.move()
@@ -141,14 +146,16 @@ if __name__ == '__main__':
                 else:
                     if isinstance(ghost.strategy, RunAwayStrategy):
                         ghost.strategy = ghost.main_strategy
+                    # if ghost.position[0] % board.factor == 0 and ghost.position[1] % board.factor == 0:
+                        ghost.speed.reset_speed()
                     ghost.draw(next_screen)
 
-            if pacman.lives == 0:
-                game_finished = 1
-                # board.draw_ghosts(screen)
-                screen.blit(przegranko_text, textRect)
+            # if pacman.lives == 0:
+            #     game_finished = 1
+            #     # board.draw_ghosts(screen)
+            #     screen.blit(przegranko_text, textRect)
 
-            elif len(board.treats) == 0:
+            if len(board.treats) == 0:
                 game_finished = 1
                 screen.blit(wygranko_text, textRect2)
 

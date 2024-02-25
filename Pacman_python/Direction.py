@@ -3,19 +3,19 @@ import os
 
 
 class Direction:
-    LEFT = (-5, 0)
-    RIGHT = (5, 0)
-    UP = (0, -5)
-    DOWN = (0, 5)
-
-    all_directions = [LEFT, RIGHT, UP, DOWN]
-
-    # LEFT = (-6, 0)
-    # RIGHT = (6, 0)
-    # UP = (0, -6)
-    # DOWN = (0, 6)
+    # LEFT = (-5, 0)
+    # RIGHT = (5, 0)
+    # UP = (0, -5)
+    # DOWN = (0, 5)
     #
     # all_directions = [LEFT, RIGHT, UP, DOWN]
+
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
+    UP = (0, -1)
+    DOWN = (0, 1)
+
+    all_directions = [LEFT, RIGHT, UP, DOWN]
 
 
     @staticmethod
@@ -74,13 +74,13 @@ class Direction:
         if event_key == pygame.K_DOWN:
             return Direction.DOWN
 
-    # @staticmethod
-    # def opposite_direction(direction: tuple) -> tuple:
-    #     if direction == Direction.LEFT:
-    #         return Direction.RIGHT
-    #     if direction == Direction.RIGHT:
-    #         return Direction.LEFT
-    #     if direction == Direction.UP:
-    #         return Direction.DOWN
-    #     if direction == Direction.DOWN:
-    #         return Direction.UP
+    @staticmethod
+    def opposite_direction(direction: tuple) -> tuple:
+        if direction == Direction.LEFT:
+            return Direction.RIGHT
+        if direction == Direction.RIGHT:
+            return Direction.LEFT
+        if direction == Direction.UP:
+            return Direction.DOWN
+        if direction == Direction.DOWN:
+            return Direction.UP
