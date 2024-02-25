@@ -5,15 +5,7 @@ from GameConstants import GameConstants
 from Strategy import RunAwayStrategy
 
 
-# class Collision(ABC):
-#
-#     @staticmethod
-#     @abstractmethod
-#     def execute_collision(board: "Board"):  # list_of_ghosts: list, pacman_position: tuple):
-#         pass
-
-
-class BigTreatCollision():
+class BigTreatCollision:
 
     @staticmethod
     def execute_collision(list_of_ghosts: list):
@@ -24,7 +16,7 @@ class BigTreatCollision():
             ghost.speed.register_new_speed(ghost.speed.speed//2 + 1)
 
 
-class GhostCollision():
+class GhostCollision:
 
     @staticmethod
     def execute_collision(board: "Board", ghost: "Ghost"):

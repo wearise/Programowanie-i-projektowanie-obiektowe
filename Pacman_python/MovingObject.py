@@ -1,11 +1,10 @@
 import pygame
-from abc import ABC, abstractmethod
+from abc import ABC
 from Strategy import Strategy
 from Direction import Direction
 from Colors import Colors
 from Speed import Speed
-from GhostPropertiesFactory import GhostPropertiesFactory, GhostProperties
-from copy import copy
+from GhostPropertiesFactory import GhostPropertiesFactory
 
 
 class MovingObject(ABC):
@@ -19,8 +18,6 @@ class MovingObject(ABC):
         self._color = None
         self._direction = (0, 0)
         self._new_direction = (0, 0)
-        # self._starting_speed = board.factor // 6
-        # self._speed = board.factor // 6
         self._speed = Speed(board.factor)
         self._current_tile = (x * board.factor, y * board.factor)
         self._waiting = 0
@@ -73,10 +70,6 @@ class MovingObject(ABC):
     def new_direction(self, new_direction: "Direction"):
         self._new_direction = new_direction
 
-    # @property
-    # def starting_speed(self):
-    #     return self._starting_speed
-    #
     @property
     def speed(self):
         return self._speed
@@ -85,13 +78,13 @@ class MovingObject(ABC):
     def speed(self, new_speed: int):
         self._speed = new_speed
 
-    @property
-    def current_tile(self):
-        return self._current_tile
-
-    @current_tile.setter
-    def current_tile(self, tile: tuple):
-        self._current_tile = tile
+    # @property
+    # def current_tile(self):
+    #     return self._current_tile
+    #
+    # @current_tile.setter
+    # def current_tile(self, tile: tuple):
+    #     self._current_tile = tile
 
     def reset_position(self):
         self._position = self._starting_position
@@ -174,8 +167,9 @@ class Pacman(MovingObject):
         # kafelek zmienia się kiedy znajdzie się w nim cały pacman i jest szerokości board.facor,
         # tworzę tuple pomocnicze, tupla1 - sprawdzam czy kafelek w tę stronę gdzie chcemy pójść
         # nie jest "w ścianach"
+        # current_tile = (self._position[0]//self._board.factor, self._position[1]//self._board.factor)
         tupla1 = (self._current_tile[0] + new_direction[0] * self._board.factor,
-            self._current_tile[1] + new_direction[1] * self._board.factor)
+                  self._current_tile[1] + new_direction[1] * self._board.factor)
 
         # tak samo jak wyżej, tylko żeby załapało kafelek wcześniej
         tupla2 = (tupla1[0] + self._direction[0] * self._board.factor,

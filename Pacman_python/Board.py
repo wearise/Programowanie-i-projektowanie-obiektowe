@@ -1,15 +1,6 @@
-import pygame
-import os
-from copy import deepcopy, copy
-from abc import ABC, abstractmethod
-from Dispatch import Dispatch
-from Direction import Direction
-from Strategy import RandomStrategy, FollowStrategy
-from Collisions import BigTreatCollision, GhostCollision
 from MovingObject import Pacman, Ghost
 from Wall import Wall
 from Treats import SmallTreat, BigTreat
-from Colors import Colors
 
 
 class Board:
